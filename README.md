@@ -104,7 +104,7 @@ StorageClient c = gw.open("main", "CHANGE_ME_main_secret");
 
 Api access via http endpoints default port ``7070`` or via `loadbalancer` & `eureka server`
 
-Structure ``localhost:7070/{db}/{namespace}/{key}`` or `{loadbalancerUrl:port}/{db}/{namespace}/{key}
+Structure ``localhost:7070/{db}/{namespace}/{key}`` or `{loadbalancerUrl:port}/{db}/{namespace}/{key}`
 
  method
 
