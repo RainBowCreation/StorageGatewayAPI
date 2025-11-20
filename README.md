@@ -14,7 +14,9 @@ The plugin always serves from local cache immediately, then **queues** persisten
 - **Write-behind**: never block the main thread on DB; `set()` returns immediately after local write.
 - **Per-DB modes**: `local-only`, `direct-sql`, `proxy-sql`.
 - **RW-Split**: `local-only`, `direct-sql`, `proxy-sql`.
+- **Multiple entry**: `standalone jar`, `Spigot, Paper plugins`, `http api`, `cp|-Dloader.path` and so much more
 - **Multi-currency Vault hook** (optional) and **PlayerPoints delegate** (optional).
+- **Java8+**: Compatible with almost everything.
 
 ---
 
@@ -100,10 +102,14 @@ StorageClient c = gw.open("main", "CHANGE_ME_main_secret");
 // other get set same as before
 ```
 
-Api access via http endpoints default port ``7070``
-Structure ``localhost:7070/{db}/{namespace}/{key}`` 
+Api access via http endpoints default port ``7070`` or via `loadbalancer` & `eureka server`
+
+Structure ``localhost:7070/{db}/{namespace}/{key}`` or `{loadbalancerUrl:port}/{db}/{namespace}/{key}
+
  method
+
 ``get`` required ``token`` which is the secret set in ``config.yml``
+
 ``post`` required ``token`` which is the secret set in ``config.yml`` and ``value``
 
 **Semantics**
@@ -112,6 +118,17 @@ Structure ``localhost:7070/{db}/{namespace}/{key}``
 * `get()` returns what’s in cache; on cold miss it may read DB (direct mode) or return local/disk if budget is saturated.
 
 ---
+
+## Complex Class, Object
+
+### install ``StorageGatewayAPI-template``
+```
+dependencies {
+   implementation 'net.rainbowcreation:StorageGatewayAPI-template:1.0.0'
+}
+```
+this module provide `AData` class and `IDataManger` interface than can be easily use for interfacing complex class|data structure with sgw
+
 
 ## Setup
 
@@ -145,14 +162,5 @@ Structure ``localhost:7070/{db}/{namespace}/{key}``
 * `execution.coreThreads / maxThreads / queueCapacity`: controls async workers.
 * MySQL writer pool: `pool.maxPoolSize / minIdle / connectionTimeoutMs`.
 * Read Your Writes: guaranteed via near-cache update on `set()`; tune `mode.readYourWritesMs` for how long to prefer cache before considering DB freshness (if you implement stricter coherence later).
-
----
-
-
-## License & credits
-
-* Uses HikariCP, Caffeine, Jackson, SnakeYAML and Javalin
-* VaultAPI PlayerPoints
-* Spigot API 1.8.8, BungeeCord API 1.20-R0.2, Velocity API 3.4.0-SNAPSHOT.
 
 ---
