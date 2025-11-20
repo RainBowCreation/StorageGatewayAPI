@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+}
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(8) }
+    withSourcesJar()
+}
+
+tasks.register('apiJar', Jar) {
+    archiveBaseName.set('StorageGatewayAPI')
+    archiveVersion.set(project.version)
+    archiveClassifier.set('')
+    from(sourceSets.main.output) {
+        include 'net/rainbowcreation/storage/api/**'
+    }
+}
+artifacts { archives tasks.named('apiJar') }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'net.rainbowcreation'
+            artifactId = 'StorageGatewayAPI'
+            version = '1.1'
+            from components.java   // this now includes main jar + sources + javadoc
+        }
+    }
+    repositories {
+        // whatever you already use
+        maven { url = uri("${rootProject.projectDir}/.repo/releases") }
+    }
+}
