@@ -1,11 +1,26 @@
 # StorageGatewayAPI
 
+### Reduce the connection to db in the private network as much as possible while provide a blazing fast response
+
+We have experienced open minecraft servers that scaling to infinite player in the same world, but the cost of 10+ plugins connections and dynamic backend node, usage cost on DB server to bump up like crazy. With this solution, we reduced the cost on Database over 99%. While use 5% more compute power & 1% storage increase. And faster latency.
+
+![how it work](howitwork.png)
+
 A single API for simple `get`/`set` key-value storage with **fast local reads** and **write-behind** to MySQL. It can run:
 - on a **backend** (Spigot/Paper/Folia; Java 8 bytecode), and/or
 - on a **proxy** (Bungee **or** Velocity; Velocity requires Java 17).
 
 The plugin always serves from local cache immediately, then **queues** persistence to MySQL in the background. Under load or pool exhaustion, your plugin still gets fast responses; the gateway drains the queue when the DB is ready.
+Highly customization. You can even put Load balancer & Eureka server outside private network and let all SGW connect to load balancer gateway and set to proxy mode without using minecraft proxy server. 
+You can even share sgw database connection with another application without open more connection to the database.
 
+## Why don't use proxy db server
+- because it won't work with minecraft that have tons of plugins that want to connect to 1 database(or db cluster), since db proxy just limit the connection to db. It doesn't manage the connection. Mean db proxy limit to 10. and 20 plugins try to open connection to the db -> some of them will fail and only 10 connection are successfully connect to db.
+- while most db proxy have read-write split. But it cannot have multiple writer or support writer endpoints.
+
+## Cons
+- Since this is designed to be `key-value` based that aimed for speed and least connections. Migration is a disaster, but if you using kv or start a new db this is perfectly fine.
+- Data stored on db may hard/unreadable by human, It won't be compatible with another services that does not use SGW.
 ---
 
 ## Why this exists
