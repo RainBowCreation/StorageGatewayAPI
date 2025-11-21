@@ -82,7 +82,7 @@ repositories {
   maven { url 'https://repo.rainbowcreation.net/' }
 }
 dependencies {
-  compileOnly 'net.rainbowcreation:StorageGatewayAPI:1.0.0'
+  compileOnly 'net.rainbowcreation:StorageGatewayAPI:1.2'
 }
 ```
 
@@ -139,7 +139,7 @@ Structure ``localhost:7070/{db}/{namespace}/{key}`` or `{loadbalancerUrl:port}/{
 ### install ``StorageGatewayAPI-template``
 ```
 dependencies {
-   implementation 'net.rainbowcreation:StorageGatewayAPI-template:1.0.0'
+   implementation 'net.rainbowcreation:StorageGatewayAPI-template:1.0'
 }
 ```
 this module provide `AData` class and `IDataManger` interface than can be easily use for interfacing complex class|data structure with sgw
