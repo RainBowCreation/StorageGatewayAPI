@@ -23,7 +23,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = 'net.rainbowcreation'
             artifactId = 'StorageGatewayAPI'
-            version = '1.1'
+            version = '1.2'
             from components.java   // this now includes main jar + sources + javadoc
         }
     }
