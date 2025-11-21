@@ -9,6 +9,8 @@ public interface StorageClient {
 
     <T> CompletableFuture<Void> set(String namespace, String key, T value);
 
+    <T> CompletableFuture<Void> delete(String namespace, String key);
+
     default <T> CompletableFuture<T> getAsyncNullable(String ns, String key, Class<T> type) {
         return get(ns, key, type).thenApply(opt -> opt.orElse(null));
     }
