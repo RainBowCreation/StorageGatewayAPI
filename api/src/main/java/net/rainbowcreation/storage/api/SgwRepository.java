@@ -1,6 +1,7 @@
 package net.rainbowcreation.storage.api;
 
 import java.time.Duration;
+
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;

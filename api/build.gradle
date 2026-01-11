@@ -16,6 +16,12 @@ tasks.register('apiJar', Jar) {
         include 'net/rainbowcreation/storage/api/**'
     }
 }
+
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
+    compileOnly 'net.rainbowcreation:StorageGatewayAPI-template:1.1-SNAPSHOT'
+}
+
 artifacts { archives tasks.named('apiJar') }
 
 publishing {
@@ -23,12 +29,11 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = 'net.rainbowcreation'
             artifactId = 'StorageGatewayAPI'
-            version = '1.2'
-            from components.java   // this now includes main jar + sources + javadoc
+            version = '1.3-SNAPSHOT'
+            from components.java
         }
     }
     repositories {
-        // whatever you already use
         maven { url = uri("${rootProject.projectDir}/.repo/releases") }
     }
 }

@@ -1,6 +1,7 @@
-package net.rainbowcreation.storage.template;
+package net.rainbowcreation.storage.api.template;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.rainbowcreation.storage.template.IDataManager;
 
 public abstract class AData<T extends AData<T>> {
 
@@ -20,6 +21,12 @@ public abstract class AData<T extends AData<T>> {
     /** Persist this instance. */
     protected boolean save() {
         if (dm != null) dm.set(ns(), key(), this);
+        return true;
+    }
+
+    /** delete from sgw */
+    protected boolean delete() {
+        if (dm != null) dm.delete(ns(), key());
         return true;
     }
 
