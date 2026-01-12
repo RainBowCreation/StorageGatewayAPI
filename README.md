@@ -91,6 +91,7 @@ repositories {
   maven { url 'https://repo.rainbowcreation.net/' }
 }
 dependencies {
+  // or implementation if you want to connect via rest api
   compileOnly 'net.rainbowcreation:StorageGatewayAPI:1.3-SNAPSHOT'
 }
 
