@@ -19,7 +19,6 @@ tasks.register('apiJar', Jar) {
 
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
-    compileOnly 'net.rainbowcreation:StorageGatewayAPI-template:1.1-SNAPSHOT'
 }
 
 artifacts { archives tasks.named('apiJar') }

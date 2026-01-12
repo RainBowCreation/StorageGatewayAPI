@@ -1,7 +1,6 @@
 package net.rainbowcreation.storage.api.template;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import net.rainbowcreation.storage.template.IDataManager;
 
 public abstract class AData<T extends AData<T>> {
 
