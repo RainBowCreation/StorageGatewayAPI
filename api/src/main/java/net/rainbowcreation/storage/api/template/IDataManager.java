@@ -8,22 +8,22 @@ import java.util.function.Supplier;
 
 public interface IDataManager {
     <T> T get(String ns, String key, Class<T> type);
-    // optional get with filters and selections
-    default String get(String ns, Map<String, String> filters) {
-        System.out.println("[IDataManager] get with filters is not implemented, required @Override");
-        return null;
+    <T> List<T> get(String ns, Map<String, String> filters, Map<String, String> selections, int limit, int offset, Class<T> type);
+    // default gets filters limited to 1000 results with 0 offset, can be overridden
+    default <T> List<T> get(String ns, Map<String, String> filters, Class<T> type) {
+        return get(ns, filters, null, 1000, 0, type);
     }
-    default String get(String ns, Map<String, String> filters, Map<String, String> selections) {
-        System.out.println("[IDataManager] get with filters is not implemented, required @Override");
-        return null;
+    default <T> List<T> get(String ns, Map<String, String> filters, int limit, Class<T> type) {
+        return get(ns, filters, null, limit, 0, type);
     }
-    default  <T> List<T> get(String ns, Map<String, String> filters, Class<T> type) {
-        System.out.println("[IDataManager] get with filters is not implemented, required @Override");
-        return null;
+    default <T> List<T> get(String ns, Map<String, String> filters, int limit, int offset, Class<T> type) {
+        return get(ns, filters, null, limit, offset, type);
     }
     default <T> List<T> get(String ns, Map<String, String> filters, Map<String, String> selections, Class<T> type) {
-        System.out.println("[IDataManager] get with filters is not implemented, required @Override");
-        return null;
+        return get(ns, filters, selections, 1000, 0, type);
+    }
+    default <T> List<T> get(String ns, Map<String, String> filters, Map<String, String> selections, int limit, Class<T> type) {
+        return get(ns, filters, selections, limit, 0, type);
     }
     void set(String ns, String key, Object value);
     // optional delete set null, can be overridden

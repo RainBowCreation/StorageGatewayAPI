@@ -11,16 +11,31 @@ import java.util.concurrent.*;
 public interface StorageClient {
     <T> CompletableFuture<Optional<T>> get(String namespace, String key, Class<T> type);
 
-    <T> CompletableFuture<Optional<T>> get(String namespace, Map<String, String> filters, Class<T> type);
+    default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Class<T> type) {
+        return get(ns, filters, null, 1000, 0, type);
+    }
 
-    // Get raw JSON string with filters and selections, selections can be null
-    CompletableFuture<Optional<String>> get(String namespace, Map<String, String> filters, Map<String, String> selections);
-    // Get list of objects with filters and selections, selections can be null
-    <T> CompletableFuture<Optional<List<T>>> get(String namespace, Map<String, String> filters, Map<String, String> selections, Class<T> type);
+    default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, int limit, Class<T> type) {
+        return get(ns, filters, null, limit, 0, type);
+    }
 
-    <T> CompletableFuture<Void> set(String namespace, String key, T value);
+    default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, int limit, int offset, Class<T> type) {
+        return get(ns, filters, null, limit, offset, type);
+    }
 
-    <T> CompletableFuture<Void> delete(String namespace, String key);
+    default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Map<String, String> selections, Class<T> type) {
+        return get(ns, filters, selections, 1000, 0, type);
+    }
+
+    default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Map<String, String> selections, int limit, Class<T> type) {
+        return get(ns, filters, selections, limit, 0, type);
+    }
+
+    <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Map<String, String> selections, int limit, int offset, Class<T> type);
+
+    CompletableFuture<Void> set(String namespace, String key, Object value);
+
+    CompletableFuture<Void> delete(String namespace, String key);
 
     default <T> CompletableFuture<T> getAsyncNullable(String ns, String key, Class<T> type) {
         return get(ns, key, type).thenApply(opt -> opt.orElse(null));
@@ -41,31 +56,54 @@ public interface StorageClient {
         return null;
     }
 
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Class<T> type, Duration timeout) {
+        return getBlocking(ns, filters, null, 1000, 0, type, timeout);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Class<T> type) {
+        return getBlocking(ns, filters, null, 1000, 0, type);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, int limit, Class<T> type, Duration timeout) {
+        return getBlocking(ns, filters, null, limit, 0, type, timeout);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, int limit, Class<T> type) {
+        return getBlocking(ns, filters, null, limit, 0, type);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, int limit, int offset, Class<T> type, Duration timeout) {
+        return getBlocking(ns, filters, null, limit, offset, type, timeout);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, int limit, int offset, Class<T> type) {
+        return getBlocking(ns, filters, null, limit, offset, type);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, Class<T> type, Duration timeout) {
+        return getBlocking(ns, filters, selections, 1000, 0, type, timeout);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, Class<T> type) {
+        return getBlocking(ns, filters, selections, 1000, 0, type);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, int limit, Class<T> type, Duration timeout) {
+        return getBlocking(ns, filters, selections, limit, 0, type, timeout);
+    }
+
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, int limit, Class<T> type) {
+        return getBlocking(ns, filters, selections, limit, 0, type);
+    }
+
     // Blocking without timeout (will wait indefinitely)
     default <T> T getBlocking(String ns, String key, Class<T> type) {
         return get(ns, key, type).join().orElse(null);
     }
 
-    default <T> T getBlocking(String ns, Map<String, String> filters, Class<T> type, Duration timeout) {
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, int limit, int offset, Class<T> type, Duration timeout) {
         try {
-            Optional<T> opt = get(ns, filters, type).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            return opt.orElse(null);
-        } catch (TimeoutException e) {
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException ee) {
-            throw new CompletionException(ee.getCause());
-        }
-        return null;
-    }
-
-    default <T> T getBlocking(String ns, Map<String, String> filters, Class<T> type) {
-        return get(ns, filters, type).join().orElse(null);
-    }
-
-    default String getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, Duration timeout) {
-        try {
-            Optional<String> opt = get(ns, filters, selections).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            Optional<List<T>> opt = get(ns, filters, selections, limit, offset, type).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
             return opt.orElse(null);
         } catch (TimeoutException e) {
             return null;
@@ -77,26 +115,8 @@ public interface StorageClient {
         return null;
     }
 
-    default String getBlocking(String ns, Map<String, String> filters, Map<String, String> selections) {
-        return get(ns, filters, selections).join().orElse(null);
-    }
-
-    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, Class<T> type, Duration timeout) {
-        try {
-            Optional<List<T>> opt = get(ns, filters, selections, type).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            return opt.orElse(null);
-        } catch (TimeoutException e) {
-            return null;
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException ee) {
-            throw new CompletionException(ee.getCause());
-        }
-        return null;
-    }
-
-    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, Class<T> type) {
-        return get(ns, filters, selections, type).join().orElse(null);
+    default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, int limit, int offset, Class<T> type) {
+        return get(ns, filters, selections, limit, offset, type).join().orElse(null);
     }
 
     void registerModel(String ns, String typeName, Map<String, ModelField> fields);
