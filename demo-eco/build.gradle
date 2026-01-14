@@ -1,0 +1,21 @@
+plugins { id 'java' }
+
+group = 'net.rainbowcreation.demo'
+version = '0.1.0'
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 8   // emit Java 8 bytecode while compiling against Spigot 1.20.6 (J17)
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT'
+    compileOnly project(':api')
+    compileOnly 'me.icegames:IGLanguages:1.4.0-SNAPSHOT'
+}

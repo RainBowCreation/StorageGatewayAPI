@@ -1,0 +1,26 @@
+# === DemoEco base settings ===
+db: "main"
+secret: "CHANGE_ME_main_secret"
+namespace: "players"
+currencyKeyPrefix: "coins:"
+tcp:
+  enabled: fasle
+  host: "127.0.0.1"
+  port: 7071
+api:
+  url: "http://127.0.0.1:7070/"
+
+# === Translation Category Policy (Part B) ===
+translationPolicy:
+  # Global default applied until a player's own policy is loaded from StorageGateway.
+  default:
+    # ALL   -> translate every category (original behavior)
+    # ONLY  -> translate only categories listed below
+    # EXCEPT-> translate all categories except those listed below
+    mode: "ALL"
+    categories: []          # e.g. ["ui", "system", "combat"]
+
+  # Where to store per-player policy via StorageGateway.
+  storage:
+    namespace: "trpolicy"   # separate logical bucket for policy
+    keyPrefix: "trcat:"     # each player's key => "trcat:<uuid>"

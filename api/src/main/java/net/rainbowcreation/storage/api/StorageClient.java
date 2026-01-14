@@ -14,24 +14,29 @@ public interface StorageClient {
     default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Class<T> type) {
         return get(ns, filters, null, 1000, 0, type);
     }
-
     default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, int limit, Class<T> type) {
         return get(ns, filters, null, limit, 0, type);
     }
-
     default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, int limit, int offset, Class<T> type) {
         return get(ns, filters, null, limit, offset, type);
     }
-
     default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Map<String, String> selections, Class<T> type) {
         return get(ns, filters, selections, 1000, 0, type);
     }
-
     default <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Map<String, String> selections, int limit, Class<T> type) {
         return get(ns, filters, selections, limit, 0, type);
     }
-
+    // gets filters limited to 1000 results with 0 offset, limit -1 mean unlimited
     <T> CompletableFuture<Optional<List<T>>> get(String ns, Map<String, String> filters, Map<String, String> selections, int limit, int offset, Class<T> type);
+
+    default CompletableFuture<Optional<Integer>> count(String ns, Map<String, String> filters) {
+        return count(ns, filters, 1000, 0);
+    }
+    default CompletableFuture<Optional<Integer>> count(String ns, Map<String, String> filters, int limit) {
+        return count(ns, filters, limit, 0);
+    }
+    // count filters limited to 1000 results with 0 offset, limit -1 mean unlimited
+    CompletableFuture<Optional<Integer>> count(String ns, Map<String, String> filters, int limit, int offset);
 
     CompletableFuture<Void> set(String namespace, String key, Object value);
 
@@ -117,6 +122,37 @@ public interface StorageClient {
 
     default <T> List<T> getBlocking(String ns, Map<String, String> filters, Map<String, String> selections, int limit, int offset, Class<T> type) {
         return get(ns, filters, selections, limit, offset, type).join().orElse(null);
+    }
+
+    default Integer countBlocking(String ns, Map<String, String> filters, Duration timeout) {
+        return countBlocking(ns, filters, 1000, 0, timeout);
+    }
+    default Integer countBlocking(String ns, Map<String, String> filters) {
+        return countBlocking(ns, filters, 1000, 0);
+    }
+    default Integer countBlocking(String ns, Map<String, String> filters, int limit, Duration timeout) {
+        return countBlocking(ns, filters, limit, 0, timeout);
+    }
+    default Integer countBlocking(String ns, Map<String, String> filters, int limit) {
+        return countBlocking(ns, filters, limit, 0);
+    }
+
+    default Integer countBlocking(String ns, Map<String, String> filters, int limit, int offset, Duration timeout) {
+        try {
+            Optional<Integer> opt = count(ns, filters, limit, offset).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            return opt.orElse(null);
+        } catch (TimeoutException e) {
+            return null;
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException ee) {
+            throw new CompletionException(ee.getCause());
+        }
+        return null;
+    }
+
+    default Integer countBlocking(String ns, Map<String, String> filters, int limit, int offset) {
+        return count(ns, filters, limit, offset).join().orElse(null);
     }
 
     void registerModel(String ns, String typeName, Map<String, ModelField> fields);

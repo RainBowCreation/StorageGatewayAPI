@@ -1,0 +1,28 @@
+name: DemoEco
+main: net.rainbowcreation.demoeco.DemoEcoPlugin
+version: 0.1.0
+folia-supported: true
+authors: [RainBowCreation]
+
+# Hard requirement for your storage service; keep as depend.
+depend: [StorageGatewayAPI]
+
+# Optional integration with IGLanguages (loaded after if present).
+softdepend: [IGLanguages]
+
+commands:
+  eco:
+    description: demo economy command
+    usage: /eco <get|set|take> <player> [amount]
+    permission: demoeco.use
+  trcat:
+    description: Manage translation categories (ALL | ONLY | EXCEPT)
+    usage: /trcat <mode|allow|block|list|show>
+    permission: demoeco.trcat
+
+permissions:
+  demoeco.use:
+    default: true
+  demoeco.trcat:
+    default: op
+
